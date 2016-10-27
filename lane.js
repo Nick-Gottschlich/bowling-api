@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var path = require("path");
 
 var frame = require('./frame.js');
 var player = require('./player.js');
@@ -12,6 +13,7 @@ let playerTable = {};
 
 //throw takes in an player, and an int
 //think im gonna move this entire function into a different file just to clean up this one
+//need error checking for when a player throws something impossible (no negative numbers, and the two throws can never add up to equal more than 10)
 function throwBall (pins, currentPlayer) {
   // there's lot of repeated code here that I can either move out of if statements or turn into another function
   // normal frame
@@ -24,11 +26,20 @@ function throwBall (pins, currentPlayer) {
 
       currentPlayer.frame[currentPlayer.currentFrame].throws[currentPlayer.currentThrow] = pins;
 
-      // currentPlayer.frame[currentFrame].score = 10;
-
       // update the previous frame if it is a strike or spare
+      if (currentPlayer.currentFrame > 1) {
+        if (currentPlayer.frame[currentPlayer.currentFrame - 1].strike || currentPlayer.frame[currentPlayer.currentFrame - 1].strike) {
+
+        }
+          .score += 10;
+      }
 
       // update the previous previous frame if it is a strike (and the last frame was also a strike!)
+      if (currentPlayer.currentFrame > 1) {
+        if (currentPlayer.frame[currentPlayer.currentFrame - 1].strike && currentPlayer.frame[currentPlayer.currentFrame - 2].strike) {
+          
+        }
+      }
 
       //increment currentThrow (since we skip the second throw, we will act as if this was the second throw)
       currentPlayer.currentThrow++;
@@ -40,8 +51,6 @@ function throwBall (pins, currentPlayer) {
       currentPlayer.frame[currentPlayer.currentFrame].spare = true;
 
       currentPlayer.frame[currentPlayer.currentFrame].throws[currentPlayer.currentThrow] = pins;
-
-      // currentPlayer.frame[currentFrame].score = 10;
 
       //update the previous frame if it is a strike
     }
@@ -59,7 +68,7 @@ function throwBall (pins, currentPlayer) {
     }
   }
   //last frame
-  else {
+  else if {
 
   }
 }
@@ -77,6 +86,8 @@ router.get('/', function(req, res) {
   playerTable['Steve'].frame[playerTable['Steve'].currentFrame].throws[0] + ' and throw1: ' +
   playerTable['Steve'].frame[playerTable['Steve'].currentFrame].throws[1] + ' and total score is: ' +
   playerTable['Steve'].totalScore);
+
+  // res.sendFile(path.join(__dirname+'/lane.html'));
 });
 
 // creates a new player, ex: /player/Steve creates a player with id Steve (key for player will be 'Steve') (case sensitive!)
