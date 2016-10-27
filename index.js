@@ -1,8 +1,8 @@
 var express = require('express');
 var app = express();
 
-var game = require('./game.js');
+var lane = require('./lane.js');
 
-app.use('/game', game);
+app.use('/lane', lane);
 
 app.listen(3000);
