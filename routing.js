@@ -173,17 +173,6 @@ function buildScoreCard(player) {
   return bigstring;
 }
 
-router.get('/lane/:laneid/player/:playerid', function(req, res) {
-  // res.send('Steve is in frame ' + laneTable[0].playerTable['Steve'].currentFrame + ' , \n this frame has throw0: ' +
-  // laneTable[0].playerTable['Steve'].frame[laneTable[0].playerTable['Steve'].currentFrame].throws[0] + ' and throw1: ' +
-  // laneTable[0].playerTable['Steve'].frame[laneTable[0].playerTable['Steve'].currentFrame].throws[1] + ' and total score is: ' +
-  // laneTable[0].playerTable['Steve'].totalScore);
-
-  //res.sendFile(path.join(__dirname+'/lane.html'));
-  // let output = buildScoreCard(req.params.laneid, req.params.playerid);
-  res.send(buildScoreCard(laneTable[req.params.laneid].playerTable[req.params.playerid]));
-});
-
 //creates a new lane, ex: /lane creates a lane with key '0'
 router.post('/lane/', function(req,res) {
   laneTable[laneCount] = new lane();
@@ -191,6 +180,11 @@ router.post('/lane/', function(req,res) {
   laneCount++;
 
   res.send('You began a game in lane: ' + thisLane + '\n');
+});
+
+//get the score card of a player
+router.get('/lane/:laneid/player/:playerid', function(req, res) {
+  res.send(buildScoreCard(laneTable[req.params.laneid].playerTable[req.params.playerid]));
 });
 
 // creates a new player, ex: /player/Steve creates a player (key for player will be 'Steve') (case sensitive!)
@@ -211,9 +205,9 @@ router.delete('/lane/:laneid/player/:playerid', function(req,res) {
 // this will throw the ball (id is name of player, name is number of pins knocked down)
 router.post('/lane/:laneid/player/:playerid/throw/:pins', function(req, res) {
   let selectedPlayer = laneTable[req.params.laneid].playerTable[req.params.playerid];
+
   throwBall(req.params.pins, selectedPlayer);
-  // updateTotalScore(selectedPlayer);
-  // probably need to update players total score after the throw
+
   res.send('Player ' + req.params.playerid + ' knocked down ' + req.params.pins + ' pins!\n');
 });
 
