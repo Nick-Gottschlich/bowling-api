@@ -1,0 +1,5 @@
+add player to game:
+# curl -X POST "http://localhost:3000/lane/player/Bob"
+
+have that player throw the ball and knock down 6 pins:
+# curl -X POST "http://localhost:3000/lane/player/Bob/throw/6"

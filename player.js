@@ -13,7 +13,7 @@ class player {
       this.frame[i] = new frame(i);
     }
 
-    this.totalScore = 0;
+    this.totalScore = parseInt(0);
 	}
 }
 
