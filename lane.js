@@ -3,6 +3,7 @@ var router = express.Router();
 
 var frame = require('./frame.js');
 
+// player has an id, and 10 frames, and a totalscore
 class player {
 	constructor(id) {
 		this.id = id;
@@ -10,6 +11,7 @@ class player {
 		for (let i = 1; i <= 10; i++) {
       this.frame[i] = new frame(i);
     }
+    this.totalScore = 0;
 	}
 }
 

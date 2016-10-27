@@ -1,14 +1,15 @@
 var express = require('express');
-//frame has a playerID,
+//each frame has an ID (1-10), and two throws (except for the last frame which has the possibility of 3.
+//a strike would looks like [10, 0]
+
+function throw() {
+
+}
 
 class frame {
   constructor(frameID) {
-    if (frameID === 10) {
-      this.test = "10th frame";
-    }
-    else {
-      this.test = "not 10th frame";
-    }
+    this.throws = [];
+    this.score = [];
   }
 }
 
