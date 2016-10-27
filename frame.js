@@ -1,15 +1,10 @@
 var express = require('express');
-//each frame has an ID (1-10), and two throws (except for the last frame which has the possibility of 3.
-//a strike would looks like [10, 0]
 
-function throw() {
-
-}
-
+// frame can have up to 3 throws (only the last frame can have 3 throws)
 class frame {
   constructor(frameID) {
     this.throws = [];
-    this.score = [];
+    this.score = 0;
   }
 }
 
