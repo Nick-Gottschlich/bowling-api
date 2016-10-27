@@ -79,6 +79,13 @@ function throwBall (pins, currentPlayer) {
       }
     }
 
+    //update the score
+    let hold = 0;
+    for (let i = 0; i <= currentPlayer.currentFrame; i++) {
+      hold += parseInt(currentPlayer.frame[i].score);
+    }
+    currentPlayer.totalScore[currentPlayer.currentFrame] = hold;
+
     if (currentPlayer.currentThrow === 1) {
       currentPlayer.currentFrame++;
       currentPlayer.currentThrow = 0;
@@ -93,24 +100,32 @@ function throwBall (pins, currentPlayer) {
   // }
 }
 
-function updateTotalScore(currentPlayer) {
-  let hold = 0;
-  for (let i = 0; i < 10; i++) {
-    hold += parseInt(currentPlayer.frame[i].score);
-  }
-  currentPlayer.totalScore = hold;
-}
+// function updateTotalScore(currentPlayer) {
+//
+// }
 
 // building an ASCII scorecard to show to when GET is called on a specific player in a specific game
 function buildScoreCard(player) {
+  let curFrameText = 'Current Frame: ' + parseInt(player.currentFrame + 1) + '\n';
+  let curThrowText = 'Current Throw: ' + parseInt(player.currentThrow + 1) + '\n';
+
   let line =       ' -----------------------------------------------------------------------------' + '\n';
   let frameText =  '| Frames        |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  10   |' + '\n';
 
   let resultText = '| Result        |';
-  // if throw[y] === 10 we should output X or / instead of the number 10
+  // we should output X or / for strike or spare
   for (let i = 0; i < 9; i++) {
-    resultText += ' ' + player.frame[i].throws[0] + ' ' + player.frame[i].throws[1] + ' |';
+    if (player.frame[i].strike) {
+      resultText += ' X 0 |';
+    }
+    else if (player.frame[i].spare) {
+      resultText += ' ' + player.frame[i].throws[0] + ' / |';
+    }
+    else {
+      resultText += ' ' + player.frame[i].throws[0] + ' ' + player.frame[i].throws[1] + ' |';
+    }
   }
+  // still haven't written the logic for the last frame yet, once that's done I'll come back to this
   resultText += ' ' + player.frame[9].throws[0] + ' ' + player.frame[9].throws[1] + ' ' + player.frame[9].throws[2] + ' |' + '\n';
 
   // will need cases for when score is 1 and 2 digits
@@ -133,27 +148,27 @@ function buildScoreCard(player) {
   // will need cases for when score is 1, 2, and 3 digits
   runningTotalText = '| Running Total |';
   for (let i = 0; i < 9; i++) {
-    if (player.totalScore >= 100) {
-      runningTotalText += ' ' + player.totalScore + ' |';
+    if (player.totalScore[i] >= 100) {
+      runningTotalText += ' ' + player.totalScore[i] + ' |';
     }
-    else if (player.totalScore >= 10) {
-      runningTotalText += ' ' + player.totalScore + '  |';
+    else if (player.totalScore[i] >= 10) {
+      runningTotalText += ' ' + player.totalScore[i] + '  |';
     }
     else {
-      runningTotalText += '  ' +  player.totalScore + '  |';
+      runningTotalText += '  ' +  player.totalScore[i] + '  |';
     }
   }
-  if (player.totalScore >= 100) {
-    runningTotalText += '  ' + player.totalScore + '   |' + '\n';
+  if (player.totalScore[9] >= 100) {
+    runningTotalText += '  ' + player.totalScore[9] + '   |' + '\n';
   }
-  else if (player.totalScore >= 10) {
-    runningTotalText += '  ' + player.totalScore + '    |' + '\n';
+  else if (player.totalScore[9] >= 10) {
+    runningTotalText += '  ' + player.totalScore[9] + '    |' + '\n';
   }
   else {
-    runningTotalText += '   ' +  player.totalScore + '   |' + '\n';
+    runningTotalText += '   ' +  player.totalScore[9] + '   |' + '\n';
   }
 
-  bigstring = line + frameText + line + resultText + line + frameScoreText + line + runningTotalText + line;
+  bigstring = curFrameText + curThrowText + line + frameText + line + resultText + line + frameScoreText + line + runningTotalText + line;
 
   return bigstring;
 }
@@ -197,7 +212,7 @@ router.delete('/lane/:laneid/player/:playerid', function(req,res) {
 router.post('/lane/:laneid/player/:playerid/throw/:pins', function(req, res) {
   let selectedPlayer = laneTable[req.params.laneid].playerTable[req.params.playerid];
   throwBall(req.params.pins, selectedPlayer);
-  updateTotalScore(selectedPlayer);
+  // updateTotalScore(selectedPlayer);
   // probably need to update players total score after the throw
   res.send('Player ' + req.params.playerid + ' knocked down ' + req.params.pins + ' pins!\n');
 });
