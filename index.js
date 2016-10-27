@@ -1,8 +1,8 @@
 var express = require('express');
 var app = express();
 
-var lane = require('./lane.js');
+var routing = require('./routing.js');
 
-app.use('/lane', lane);
+app.use('/', routing);
 
 app.listen(3000);
