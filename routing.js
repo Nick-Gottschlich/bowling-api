@@ -101,13 +101,72 @@ function updateTotalScore(currentPlayer) {
   currentPlayer.totalScore = hold;
 }
 
+// building an ASCII scorecard to show to when GET is called on a specific player in a specific game
+function buildScoreCard(player) {
+  let line =       ' -----------------------------------------------------------------------------' + '\n';
+  let frameText =  '| Frames        |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  10   |' + '\n';
+
+  let resultText = '| Result        |';
+  // if throw[y] === 10 we should output X or / instead of the number 10
+  for (let i = 0; i < 9; i++) {
+    resultText += ' ' + player.frame[i].throws[0] + ' ' + player.frame[i].throws[1] + ' |';
+  }
+  resultText += ' ' + player.frame[9].throws[0] + ' ' + player.frame[9].throws[1] + ' ' + player.frame[9].throws[2] + ' |' + '\n';
+
+  // will need cases for when score is 1 and 2 digits
+  frameScoreText = '| Frame Score   |';
+  for (let i = 0; i < 9; i++) {
+    if (player.frame[i].score >= 10) {
+      frameScoreText += ' ' + player.frame[i].score + '  |';
+    }
+    else {
+      frameScoreText += '  ' + player.frame[i].score + '  |';
+    }
+  }
+  if (player.frame[9].score >= 10) {
+    frameScoreText += '  ' + player.frame[9].score + '   |' + '\n';
+  }
+  else {
+    frameScoreText += '   ' + player.frame[9].score + '   |' + '\n';
+  }
+
+  // will need cases for when score is 1, 2, and 3 digits
+  runningTotalText = '| Running Total |';
+  for (let i = 0; i < 9; i++) {
+    if (player.totalScore >= 100) {
+      runningTotalText += ' ' + player.totalScore + ' |';
+    }
+    else if (player.totalScore >= 10) {
+      runningTotalText += ' ' + player.totalScore + '  |';
+    }
+    else {
+      runningTotalText += '  ' +  player.totalScore + '  |';
+    }
+  }
+  if (player.totalScore >= 100) {
+    runningTotalText += '  ' + player.totalScore + '   |' + '\n';
+  }
+  else if (player.totalScore >= 10) {
+    runningTotalText += '  ' + player.totalScore + '    |' + '\n';
+  }
+  else {
+    runningTotalText += '   ' +  player.totalScore + '   |' + '\n';
+  }
+
+  bigstring = line + frameText + line + resultText + line + frameScoreText + line + runningTotalText + line;
+
+  return bigstring;
+}
+
 router.get('/lane/:laneid/player/:playerid', function(req, res) {
-  res.send('Steve is in frame ' + laneTable[0].playerTable['Steve'].currentFrame + ' , \n this frame has throw0: ' +
-  laneTable[0].playerTable['Steve'].frame[laneTable[0].playerTable['Steve'].currentFrame].throws[0] + ' and throw1: ' +
-  laneTable[0].playerTable['Steve'].frame[laneTable[0].playerTable['Steve'].currentFrame].throws[1] + ' and total score is: ' +
-  laneTable[0].playerTable['Steve'].totalScore);
+  // res.send('Steve is in frame ' + laneTable[0].playerTable['Steve'].currentFrame + ' , \n this frame has throw0: ' +
+  // laneTable[0].playerTable['Steve'].frame[laneTable[0].playerTable['Steve'].currentFrame].throws[0] + ' and throw1: ' +
+  // laneTable[0].playerTable['Steve'].frame[laneTable[0].playerTable['Steve'].currentFrame].throws[1] + ' and total score is: ' +
+  // laneTable[0].playerTable['Steve'].totalScore);
 
   //res.sendFile(path.join(__dirname+'/lane.html'));
+  // let output = buildScoreCard(req.params.laneid, req.params.playerid);
+  res.send(buildScoreCard(laneTable[req.params.laneid].playerTable[req.params.playerid]));
 });
 
 //creates a new lane, ex: /lane creates a lane with key '0'
@@ -116,7 +175,7 @@ router.post('/lane/', function(req,res) {
   thisLane = laneCount;
   laneCount++;
 
-  res.send('You began a game in lane: ' + thisLane);
+  res.send('You began a game in lane: ' + thisLane + '\n');
 });
 
 // creates a new player, ex: /player/Steve creates a player (key for player will be 'Steve') (case sensitive!)
@@ -124,14 +183,14 @@ router.post('/lane/', function(req,res) {
 router.post('/lane/:laneid/player/:playerid', function(req, res){
   laneTable[req.params.laneid].playerTable[req.params.playerid] = new player();
 
-  res.send('Player ' + req.params.playerid + ' added to game.');
+  res.send('Player ' + req.params.playerid + ' added to game.\n');
 });
 
 // remove a player from the game by ID
 router.delete('/lane/:laneid/player/:playerid', function(req,res) {
   delete laneTable[req.params.laneid].playerTable[req.params.playerid];
 
-  res.send('Player ' + req.params.playerid + ' removed from game.')
+  res.send('Player ' + req.params.playerid + ' removed from game.\n')
 });
 
 // this will throw the ball (id is name of player, name is number of pins knocked down)
@@ -140,7 +199,7 @@ router.post('/lane/:laneid/player/:playerid/throw/:pins', function(req, res) {
   throwBall(req.params.pins, selectedPlayer);
   updateTotalScore(selectedPlayer);
   // probably need to update players total score after the throw
-  res.send('Player ' + req.params.playerid + ' knocked down ' + req.params.pins + ' pins!');
+  res.send('Player ' + req.params.playerid + ' knocked down ' + req.params.pins + ' pins!\n');
 });
 
 module.exports = router;
