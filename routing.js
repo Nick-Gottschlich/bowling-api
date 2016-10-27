@@ -33,8 +33,6 @@ function throwBall (pins, currentPlayer) {
       currentPlayer.frame[currentPlayer.currentFrame].spare = true;
 
       currentPlayer.frame[currentPlayer.currentFrame].throws[currentPlayer.currentThrow] = pins;
-
-      //update the previous frame if it is a strike
     }
 
     currentPlayer.frame[currentPlayer.currentFrame].score = parseInt(currentPlayer.frame[currentPlayer.currentFrame].throws[0]) + parseInt(currentPlayer.frame[currentPlayer.currentFrame].throws[1]);
@@ -42,10 +40,19 @@ function throwBall (pins, currentPlayer) {
     //case where last 2 frames are strikes
     if (currentPlayer.currentFrame > 1) {
       if (currentPlayer.frame[currentPlayer.currentFrame - 1].strike && currentPlayer.frame[currentPlayer.currentFrame - 2].strike) {
-        //if this throw is a strike, two frames back gets +10
+        //if this throw is a strike, two frames back gets +10, and the runningTotal of one frame back gets +10
         if (currentPlayer.frame[currentPlayer.currentFrame].strike) {
           currentPlayer.frame[currentPlayer.currentFrame - 2].score += parseInt(10);
           currentPlayer.totalScore[currentPlayer.currentFrame - 2] += parseInt(10);
+
+          currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(10);
+        }
+        //else if this is the first throw we add it to two frames back, and we add it to the running total one back
+        else if (currentPlayer.currentThrow == 0) {
+          currentPlayer.frame[currentPlayer.currentFrame - 2].score += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
+          currentPlayer.totalScore[currentPlayer.currentFrame - 2] += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
+
+          currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
         }
       }
     }
@@ -58,7 +65,7 @@ function throwBall (pins, currentPlayer) {
           currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(10);
           currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(10);
         }
-        //else if we hit a spare and are on the second throw, add the score of this frame to the previous frame
+        //else if we are on the second throw, add the score of this frame to the previous frame
         else if (currentPlayer.currentThrow == 1) {
           currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
           currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
@@ -75,7 +82,7 @@ function throwBall (pins, currentPlayer) {
           currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(10);
         }
         //else if we are on the first throw, add the score of this frame to the previous frame
-        if (currentPlayer.currentThrow == 0) {
+        else if (currentPlayer.currentThrow == 0) {
           currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(pins);
           currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(pins);
         }
@@ -103,10 +110,6 @@ function throwBall (pins, currentPlayer) {
   // }
 }
 
-// function updateTotalScore(currentPlayer) {
-//
-// }
-
 // building an ASCII scorecard to show to when GET is called on a specific player in a specific game
 function buildScoreCard(player) {
   let curFrameText = 'Current Frame: ' + parseInt(player.currentFrame + 1) + '\n';
@@ -131,7 +134,6 @@ function buildScoreCard(player) {
   // still haven't written the logic for the last frame yet, once that's done I'll come back to this
   resultText += ' ' + player.frame[9].throws[0] + ' ' + player.frame[9].throws[1] + ' ' + player.frame[9].throws[2] + ' |' + '\n';
 
-  // will need cases for when score is 1 and 2 digits
   frameScoreText = '| Frame Score   |';
   for (let i = 0; i < 9; i++) {
     if (player.frame[i].score >= 10) {
@@ -148,7 +150,6 @@ function buildScoreCard(player) {
     frameScoreText += '   ' + player.frame[9].score + '   |' + '\n';
   }
 
-  // will need cases for when score is 1, 2, and 3 digits
   runningTotalText = '| Running Total |';
   for (let i = 0; i < 9; i++) {
     if (player.totalScore[i] >= 100) {
