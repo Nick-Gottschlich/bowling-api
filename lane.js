@@ -13,18 +13,20 @@ class player {
 	}
 }
 
-playerTest = new player;
+let playerArray = [];
 
 router.get('/', function(req, res) {
-	res.send(playerTest.frame[10].test)
+  res.send(playerArray[0].id + " " + playerArray[0].frame[10].test);
 })
 
-// what i should actually do is have an array of players, and this appends a new player to that array
 // creates a new player, ex: /player/steve creates a player with id steve (variable name for the player is also "player_steve")
+// need to write something to make sure a player name can't be added twice
 router.post('/player/:id', function(req, res){
 	let playerName = "player_" + req.params.id;
 	playerName = new player(req.params.id);
+  playerArray.push(playerName);
 	//need to do something here or it won't exit, res.send("something");
+  res.send("Player " + req.params.id + " added to game.");
 });
 
 module.exports = router;
