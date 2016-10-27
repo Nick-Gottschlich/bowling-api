@@ -26,21 +26,6 @@ function throwBall (pins, currentPlayer) {
 
       currentPlayer.frame[currentPlayer.currentFrame].throws[currentPlayer.currentThrow] = pins;
 
-      // update the previous frame if it is a strike or spare
-      if (currentPlayer.currentFrame > 1) {
-        if (currentPlayer.frame[currentPlayer.currentFrame - 1].strike || currentPlayer.frame[currentPlayer.currentFrame - 1].strike) {
-
-        }
-          .score += 10;
-      }
-
-      // update the previous previous frame if it is a strike (and the last frame was also a strike!)
-      if (currentPlayer.currentFrame > 1) {
-        if (currentPlayer.frame[currentPlayer.currentFrame - 1].strike && currentPlayer.frame[currentPlayer.currentFrame - 2].strike) {
-          
-        }
-      }
-
       //increment currentThrow (since we skip the second throw, we will act as if this was the second throw)
       currentPlayer.currentThrow++;
     }
@@ -58,6 +43,44 @@ function throwBall (pins, currentPlayer) {
     currentPlayer.frame[currentPlayer.currentFrame].throws[currentPlayer.currentThrow] = pins;
 
     currentPlayer.frame[currentPlayer.currentFrame].score = parseInt(currentPlayer.frame[currentPlayer.currentFrame].throws[0]) + parseInt(currentPlayer.frame[currentPlayer.currentFrame].throws[1]);
+
+    //case where last 2 frames are strikes
+    if (currentPlayer.currentFrame > 1) {
+      if (currentPlayer.frame[currentPlayer.currentFrame - 1].strike && currentPlayer.frame[currentPlayer.currentFrame - 2].strike) {
+        //if this throw is a strike, two frames back gets +10
+        if (currentPlayer.frame[currentPlayer.currentFrame].strike) {
+          currentPlayer.frame[currentPlayer.currentFrame - 2].score += parseInt(10);
+        }
+      }
+    }
+
+    //case where last frame was strike
+    if (currentPlayer.currentFrame > 0) {
+      if (currentPlayer.frame[currentPlayer.currentFrame - 1].strike) {
+        //if we hit a strike (we will be guaranteed to be on second throw in this case), previous frame gets +10
+        if (currentPlayer.frame[currentPlayer.currentFrame].strike) {
+          currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(10);
+        }
+        //else if we are on the second throw, add the score of this frame to the previous frame
+        if (currentPlayer.currentThrow === 1) {
+          currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
+        }
+      }
+    }
+
+    // case where last frame was spare
+    if (currentPlayer.currentFrame > 0) {
+      if (currentPlayer.frame[currentPlayer.currentFrame - 1].spare) {
+        //if we hit a strike, previous frame gets +10
+        if (currentPlayer.frame[currentPlayer.currentFrame].strike) {
+          currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(10);
+        }
+        //else if we are on the first throw, add the score of this frame to the previous frame
+        if (currentPlayer.currentTHrow === 0) {
+          currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(pins);
+        }
+      }
+    }
 
     if (currentPlayer.currentThrow === 1) {
       currentPlayer.currentFrame++;
