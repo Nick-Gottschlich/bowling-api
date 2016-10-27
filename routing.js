@@ -29,15 +29,13 @@ function throwBall (pins, currentPlayer) {
 
     // spare!
     // checks to see if this is the second throw, and if the first throw plus this throw's pins equals 10
-    else if (currentPlayer.currentThrow == 1 && (currentPlayer.frame[currentPlayer.currentFrame].throws[currentPlayer.currentThrow - 1] + pins == 10)) {
+    else if (currentPlayer.currentThrow == 1 && (parseInt(currentPlayer.frame[currentPlayer.currentFrame].throws[0]) + parseInt(pins) == 10)) {
       currentPlayer.frame[currentPlayer.currentFrame].spare = true;
 
       currentPlayer.frame[currentPlayer.currentFrame].throws[currentPlayer.currentThrow] = pins;
 
       //update the previous frame if it is a strike
     }
-
-    //currentPlayer.frame[currentPlayer.currentFrame].throws[currentPlayer.currentThrow] = pins;
 
     currentPlayer.frame[currentPlayer.currentFrame].score = parseInt(currentPlayer.frame[currentPlayer.currentFrame].throws[0]) + parseInt(currentPlayer.frame[currentPlayer.currentFrame].throws[1]);
 
@@ -47,6 +45,7 @@ function throwBall (pins, currentPlayer) {
         //if this throw is a strike, two frames back gets +10
         if (currentPlayer.frame[currentPlayer.currentFrame].strike) {
           currentPlayer.frame[currentPlayer.currentFrame - 2].score += parseInt(10);
+          currentPlayer.totalScore[currentPlayer.currentFrame - 2] += parseInt(10);
         }
       }
     }
@@ -57,10 +56,12 @@ function throwBall (pins, currentPlayer) {
         //if we hit a strike (we will be guaranteed to be on second throw in this case), previous frame gets +10
         if (currentPlayer.frame[currentPlayer.currentFrame].strike) {
           currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(10);
+          currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(10);
         }
-        //else if we are on the second throw, add the score of this frame to the previous frame
-        if (currentPlayer.currentThrow == 1) {
+        //else if we hit a spare and are on the second throw, add the score of this frame to the previous frame
+        else if (currentPlayer.currentThrow == 1) {
           currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
+          currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
         }
       }
     }
@@ -71,10 +72,12 @@ function throwBall (pins, currentPlayer) {
         //if we hit a strike, previous frame gets +10
         if (currentPlayer.frame[currentPlayer.currentFrame].strike) {
           currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(10);
+          currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(10);
         }
         //else if we are on the first throw, add the score of this frame to the previous frame
         if (currentPlayer.currentThrow == 0) {
           currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(pins);
+          currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(pins);
         }
       }
     }
