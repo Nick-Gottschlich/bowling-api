@@ -44,14 +44,14 @@ function throwBall (pins, currentPlayer) {
   if (currentPlayer.currentFrame > 1) {
     if (currentPlayer.frame[currentPlayer.currentFrame - 1].strike && currentPlayer.frame[currentPlayer.currentFrame - 2].strike) {
       //if this throw is a strike, two frames back gets +10, and the runningTotal of one frame back gets +10
-      if (currentPlayer.frame[currentPlayer.currentFrame].strike) {
+      if (currentPlayer.frame[currentPlayer.currentFrame].strike && ((currentPlayer.currentFrame == 9 && currentPlayer.currentThrow == 0) || (currentPlayer.currentFrame < 9 && currentPlayer.currentThrow == 1))) {
         currentPlayer.frame[currentPlayer.currentFrame - 2].score += parseInt(10);
         currentPlayer.totalScore[currentPlayer.currentFrame - 2] += parseInt(10);
 
         currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(10);
       }
       //else if this is the first throw we add it to two frames back, and we add it to the running total one back
-      else if (currentPlayer.currentThrow == 0) {
+      else if (currentPlayer.currentThrow == 0 && currentPlayer.currentFrame < 9) {
         currentPlayer.frame[currentPlayer.currentFrame - 2].score += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
         currentPlayer.totalScore[currentPlayer.currentFrame - 2] += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
 
@@ -64,19 +64,24 @@ function throwBall (pins, currentPlayer) {
   if (currentPlayer.currentFrame > 0) {
     if (currentPlayer.frame[currentPlayer.currentFrame - 1].strike) {
       //if we hit a strike (we will be guaranteed to be on second throw in this case), previous frame gets +10
-      if (currentPlayer.frame[currentPlayer.currentFrame].strike) {
+      if (currentPlayer.frame[currentPlayer.currentFrame].strike && ((currentPlayer.currentFrame == 9 && currentPlayer.currentThrow == 0 || currentPlayer.currentFrame < 9 && currentPlayer.currentThrow == 1))) {
         currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(10);
         currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(10);
       }
-      //else if we are on the second throw, and this is not the last frame, add the score of this frame to the previous frame
-      else if (currentPlayer.currentThrow == 1 /* && currentPlayer.currentFrame < 9 */) {
+      //else if we are on the second throw, add the score of this frame to the previous frame
+      else if (currentPlayer.currentThrow == 1 && currentPlayer.currentFrame < 9) {
         currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
         currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(currentPlayer.frame[currentPlayer.currentFrame].score);
+      }
+      else if (currentPlayer.currentThrow == 1 && currentPlayer.currentFrame == 9) {
+        currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(currentPlayer.frame[currentPlayer.currentFrame].throws[1]);
+        currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(currentPlayer.frame[currentPlayer.currentFrame].throws[1]);
       }
     }
   }
 
   //case where we are on the last frame, and we got a strike on the first throw
+
 
   // case where last frame was spare
   if (currentPlayer.currentFrame > 0) {
@@ -148,12 +153,12 @@ function buildScoreCard(player) {
     //second throws is strike
     if (player.frame[9].throws[1] == 10) {
       //third throws is strike
-      if (player.frame[9].throws[1] == 10) {
+      if (player.frame[9].throws[2] == 10) {
         resultText += ' X X X |' + '\n';
       }
-      //else third throws we just print number
+      //else third throw we just print number of pins
       else {
-        resultText += ' X X ' + player.frame[9].throws[1] + ' |' + '\n';
+        resultText += ' X X ' + player.frame[9].throws[2] + ' |' + '\n';
       }
     }
     //else if we hit 0 on second and 10 on third
@@ -167,7 +172,7 @@ function buildScoreCard(player) {
   }
   //case where second throws is a spare
   else if (parseInt(player.frame[9].throws[0]) + parseInt(player.frame[9].throws[1]) == parseInt(10)) {
-    //case where we hit a strike on throws 3
+    //case where we hit a strike on throw 3
     if (player.frame[9].throws[2] == 10) {
       resultText += ' ' + player.frame[9].throws[0] + ' / X |' + '\n';
     }
@@ -222,6 +227,16 @@ function buildScoreCard(player) {
   return bigstring;
 }
 
+//displays all active lanes
+router.get('/lane', function(req,res) {
+  let laneString = 'Active Lanes: \n';
+  for (var key in laneTable) {
+    laneString += key + '\n';
+  }
+
+  res.send(laneString);
+});
+
 //creates a new lane, ex: /lane creates a lane with key '0'
 router.post('/lane/', function(req,res) {
   laneTable[laneCount] = new lane();
@@ -229,6 +244,16 @@ router.post('/lane/', function(req,res) {
   laneCount++;
 
   res.send('You began a game in lane: ' + thisLane + '\n');
+});
+
+//get a list of players in the game
+router.get('/lane/:laneid/player', function (req,res) {
+  let playerString = 'Players: \n';
+  for (var key in laneTable[req.params.laneid].playerTable) {
+    playerString += key + '\n';
+  }
+
+  res.send(playerString);
 });
 
 //get the score card of a player
