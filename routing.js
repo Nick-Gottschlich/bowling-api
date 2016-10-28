@@ -60,7 +60,7 @@ function throwBall (pins, currentPlayer) {
   if (currentPlayer.currentFrame > 0) {
     if (currentPlayer.frame[currentPlayer.currentFrame - 1].strike) {
       //if we hit a strike (we will be guaranteed to be on second throw in this case), previous frame gets +10
-      if (currentPlayer.frame[currentPlayer.currentFrame].strike && ((currentPlayer.currentFrame == 9 && currentPlayer.currentThrow == 0 || currentPlayer.currentFrame < 9 && currentPlayer.currentThrow == 1))) {
+      if (currentPlayer.frame[currentPlayer.currentFrame].strike && (currentPlayer.currentFrame == 9 && currentPlayer.currentThrow == 0 || currentPlayer.currentFrame < 9 && currentPlayer.currentThrow == 1)) {
         currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(10);
         currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(10);
       }
@@ -80,7 +80,7 @@ function throwBall (pins, currentPlayer) {
   if (currentPlayer.currentFrame > 0) {
     if (currentPlayer.frame[currentPlayer.currentFrame - 1].spare) {
       //if we hit a strike, previous frame gets +10
-      if (currentPlayer.frame[currentPlayer.currentFrame].strike) {
+      if (currentPlayer.frame[currentPlayer.currentFrame].strike && (currentPlayer.currentFrame == 9 && currentPlayer.currentThrow == 0 || currentPlayer.currentFrame < 9 && currentPlayer.currentThrow == 1)) {
         currentPlayer.frame[currentPlayer.currentFrame - 1].score += parseInt(10);
         currentPlayer.totalScore[currentPlayer.currentFrame - 1] += parseInt(10);
       }
@@ -268,8 +268,8 @@ router.post('/lane/:laneid/player/:playerid/throw/:pins', function(req, res) {
   let selectedPlayer = laneTable[req.params.laneid].playerTable[req.params.playerid];
 
   //error checking
-  //as soon as we start going over 3 throws, we know we've finished the game
-  if (selectedPlayer.currentThrow > 2) {
+  //as soon as we start going over 3 throws or 10 frames, we know we've finished the game
+  if (selectedPlayer.currentThrow > 2 || selectedPlayer.currentFrame > 9) {
     throw "Youve finished the game!";
   }
 
