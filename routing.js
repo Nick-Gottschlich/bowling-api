@@ -202,7 +202,7 @@ function buildScoreCard(player) {
     }
   }
   if (player.totalScore[9] >= 100) {
-    runningTotalText += '  ' + player.totalScore[9] + '   |' + '\n';
+    runningTotalText += '  ' + player.totalScore[9] + '  |' + '\n';
   }
   else if (player.totalScore[9] >= 10) {
     runningTotalText += '  ' + player.totalScore[9] + '    |' + '\n';
