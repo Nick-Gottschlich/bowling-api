@@ -24,5 +24,5 @@ To view a player's score card:
 To throw the ball:
 # curl -X POST "http://localhost:3000/lane/LANEID/player/PLAYERID/throw/PINSKNOCKEDDOWN"
 # example: curl -X POST "http://localhost:3000/lane/0/player/bob/throw/8"
-### This will knock down 8 pins, and move Bob to the next throw or frame. You can view the results immediately
+### This will knock down 8 pins, and move bob to the next throw or frame. You can view the results immediately
 ### by viewing the scorecard.
