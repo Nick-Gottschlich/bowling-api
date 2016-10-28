@@ -9,8 +9,7 @@ let laneCount = 0;
 //this holds all the lanes, the key will be an incrementing integer (per game)
 let laneTable = {};
 
-//throwBall takes in an player, and an int
-//need error checking for when a player throws something impossible (no negative numbers, and the two throws can never add up to equal more than 10)
+//throwBall handles all the games logic
 function throwBall (pins, currentPlayer) {
   currentPlayer.frame[currentPlayer.currentFrame].throws[currentPlayer.currentThrow] = pins;
 
@@ -100,7 +99,7 @@ function throwBall (pins, currentPlayer) {
   }
   currentPlayer.totalScore[currentPlayer.currentFrame] = hold;
 
-
+  // move on in the game
   if (currentPlayer.currentThrow == 1) {
     if (currentPlayer.currentFrame == 9 && (currentPlayer.frame[9].strike || currentPlayer.frame[9].spare)) {
       currentPlayer.currentThrow++;
@@ -268,6 +267,28 @@ router.delete('/lane/:laneid/player/:playerid', function(req,res) {
 router.post('/lane/:laneid/player/:playerid/throw/:pins', function(req, res) {
   let selectedPlayer = laneTable[req.params.laneid].playerTable[req.params.playerid];
 
+  //error checking
+  //as soon as we start going over 3 throws, we know we've finished the game
+  if (selectedPlayer.currentThrow > 2) {
+    throw "Youve finished the game!";
+  }
+
+  //pins has to be 0-10 for each throw
+  if (req.params.pins < 0 || req.params.pins > 10) {
+    throw "Cant knock down that many pins!";
+  }
+
+  // for frames 0-8 pins knocked down can't add up to be more than 10
+  if (selectedPlayer.currentFrame < 9 && (parseInt(selectedPlayer.frame[selectedPlayer.currentFrame].throws[0]) + parseInt(req.params.pins) > 10)) {
+    throw "Cant knock down that many pins!";
+  }
+
+  // for frame 9 pins knocked down can't be more than 30
+  if (selectedPlayer.currentFrame < 9 && (parseInt(selectedPlayer.frame[selectedPlayer.currentFrame].throws[0]) + parseInt(selectedPlayer.frame[selectedPlayer.currentFrame].throws[1]) + parseInt(req.params.pins) > 10)) {
+    throw "Cant knock down that many pins!";
+  }
+
+  //throw the ball
   throwBall(req.params.pins, selectedPlayer);
 
   res.send('Player ' + req.params.playerid + ' knocked down ' + req.params.pins + ' pins!\n');
