@@ -12,9 +12,6 @@ let laneTable = {};
 //throwBall takes in an player, and an int
 //need error checking for when a player throws something impossible (no negative numbers, and the two throws can never add up to equal more than 10)
 function throwBall (pins, currentPlayer) {
-  // there's lot of repeated code here that I can either move out of if statements or turn into another function
-  // normal frame
-  // if (currentPlayer.currentFrame < 9) {
   currentPlayer.frame[currentPlayer.currentFrame].throws[currentPlayer.currentThrow] = pins;
 
   // strike!
@@ -80,9 +77,6 @@ function throwBall (pins, currentPlayer) {
     }
   }
 
-  //case where we are on the last frame, and we got a strike on the first throw
-
-
   // case where last frame was spare
   if (currentPlayer.currentFrame > 0) {
     if (currentPlayer.frame[currentPlayer.currentFrame - 1].spare) {
@@ -119,11 +113,6 @@ function throwBall (pins, currentPlayer) {
   else {
     currentPlayer.currentThrow++;
   }
-  // }
-  // //last frame
-  // else if (currentPlayer.currentFrame == 9) {
-  //
-  // }
 }
 
 // building an ASCII scorecard to show to when GET is called on a specific player in a specific game
@@ -262,7 +251,6 @@ router.get('/lane/:laneid/player/:playerid', function(req, res) {
 });
 
 // creates a new player, ex: /player/Steve creates a player (key for player will be 'Steve') (case sensitive!)
-// need to write something to make sure a player name can't be added twice
 router.post('/lane/:laneid/player/:playerid', function(req, res){
   laneTable[req.params.laneid].playerTable[req.params.playerid] = new player();
 
@@ -276,7 +264,7 @@ router.delete('/lane/:laneid/player/:playerid', function(req,res) {
   res.send('Player ' + req.params.playerid + ' removed from game.\n')
 });
 
-// this will throw the ball (id is name of player, name is number of pins knocked down)
+// this will throw the ball
 router.post('/lane/:laneid/player/:playerid/throw/:pins', function(req, res) {
   let selectedPlayer = laneTable[req.params.laneid].playerTable[req.params.playerid];
 
