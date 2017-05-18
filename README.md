@@ -2,6 +2,8 @@
 
 This is a bowling scoring REST API, written in Javascript using [express](https://expressjs.com/). It lets you keep track of bowling scores for multiple players on multiple lanes through "user-friendly" GET and POST requests.
 
+I did this a while back as a way to learn Javascript and RESTful API's and looking now let me tell you, this code ain't pretty.
+
 ## To set up:
 
 * npm install
