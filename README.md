@@ -6,9 +6,9 @@ I did this a while back as a way to learn Javascript and RESTful API's and looki
 
 ## To set up:
 
-* npm install
-* npm install -g nodemon
-* nodemon index.js
+* `npm install`
+* `npm install -g nodemon`
+* `nodemon index.js`
 
 ## To start a new lane:
 * `curl -X POST "http://localhost:3000/lane"`
