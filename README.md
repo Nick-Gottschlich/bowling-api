@@ -10,7 +10,7 @@
 ## To view active lanes:
 `curl -X GET "http://localhost:3000/lane"`
 
-### To create a new player:
+## To create a new player:
 `curl -X POST "http://localhost:3000/lane/LANEID/player/PLAYERID"`
 example: `curl -X POST "http://localhost:3000/lane/0/player/bob"`
 
