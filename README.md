@@ -1,4 +1,4 @@
-### What is this?
+# What is this?
 
 This is a bowling scoring REST API, written in Javascript. It lets you keep track of bowling scores for multiple players on multiple lanes through "user-friendly" get and post requests.
 
