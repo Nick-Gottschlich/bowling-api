@@ -1,5 +1,5 @@
 var express = require('express');
-var frame = require('./frame.js')
+var frame = require('./frame.js');
 
 // player has 10 frames, and a totalscore, and a counter for throw and frame
 class player {
